@@ -4,7 +4,6 @@ import torch
 from torch import nn
 from torch.utils.tensorboard import SummaryWriter
 from torch.utils.data import DataLoader
-from customdataset import data
 import os
 from glob import glob
 from tqdm import tqdm
@@ -271,7 +270,7 @@ if __name__ == '__main__':
     parser.add_argument('--mask_path', default = r'C:\Aakrit\College\8th Sem\Major Project\AOTGAN-github\AOT-GAN-for-Inpainting\maskDataset\maskDatasetAOTGAN', type=str, help='Path to masks')
     parser.add_argument('--tensorboard_path', default = r'C:\Aakrit\College\8th Sem\Major Project\aotgan(scratch)\tensorboard_logs\scratch', type=str, help='Path to TensorBoard logs')
     parser.add_argument('--model_save_path', default = r'C:\Aakrit\College\8th Sem\Major Project\aotgan(scratch)\model_directory\scratch', type=str, help='Path to save model checkpoints')
-    parser.add_argument('--block_number', default = 2, type=str, help='Number of AOT Blocks')
+    parser.add_argument('--block_number', default = 2, type=int, help='Number of AOT Blocks')
     args = parser.parse_args()
 
     trainer = Trainer(args.data_path, args.mask_path, args.tensorboard_path, args.model_save_path, args.block_number)
