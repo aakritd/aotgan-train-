@@ -8,7 +8,7 @@ class CustomDataset(Dataset):
         self.data = data
         self.img_transform = transforms.Compose(
             [
-                transforms.RandomResizedCrop((256,256)),
+                transforms.RandomResizedCrop((512,512)),
                 transforms.RandomHorizontalFlip(),
                 transforms.ToTensor()
             ]
