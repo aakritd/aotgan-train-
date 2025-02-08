@@ -8,7 +8,7 @@ class CustomDataset(Dataset):
         self.data = data
         self.img_transform = transforms.Compose(
             [
-                transforms.RandomResizedCrop((512,512)),
+                transforms.RandomResizedCrop((256,256)),
                 transforms.RandomHorizontalFlip(),
                 transforms.ToTensor()
             ]
@@ -73,8 +73,8 @@ def create_dataset(data_path, mask_path):
 
 
     # Split the dataset
-    image_train_set = datasetList[:27000]
-    image_val_set = datasetList[27000:27000+500]
+    image_train_set = datasetList[:69904]
+    image_val_set = datasetList[69904:69904+500]
 
 
     # Append the directory path to each filename
@@ -130,105 +130,27 @@ def create_dataset(data_path, mask_path):
 
     # List and sort the files for each class
     datasetListClass1 = sorted(os.listdir(DATA_DIR_class1))
+    mask_train_set_1 = datasetListClass1[125:]  # All images except first 125 for training
+    mask_val_set_1 = datasetListClass1[:125]  # First 125 for validation
+
     datasetListClass2 = sorted(os.listdir(DATA_DIR_class2))
+    mask_train_set_2 = datasetListClass2[125:]  # All images except first 125 for training
+    mask_val_set_2 = datasetListClass2[:125]  # First 125 for validation
+
     datasetListClass3 = sorted(os.listdir(DATA_DIR_class3))
+    mask_train_set_3 = datasetListClass3[125:]  # All images except first 125 for training
+    mask_val_set_3 = datasetListClass3[:125]  # First 125 for validation
+
     datasetListClass4 = sorted(os.listdir(DATA_DIR_class4))
+    mask_train_set_4 = datasetListClass4[125:]  # All images except first 125 for training
+    mask_val_set_4 = datasetListClass4[:125]  # First 125 for validation
 
-    # Metadata for mask dataset
-    metadata = {
-        "0.8-8": 35000,
-        "8-16": 2700,
-        "16-24": 497,
-        "24-33": 175
-    }
-
-    # Total number of images for training and validation
-    N_train = 30000
-    N_val = 500
+    # Combine all sets
+    mask_train_set = mask_train_set_1 + mask_train_set_2 + mask_train_set_3 + mask_train_set_4
+    mask_val_set = mask_val_set_1 + mask_val_set_2 + mask_val_set_3 + mask_val_set_4
 
 
-    # Total number of images in the dataset
-    total_images = sum(metadata.values())
-
-    # Calculate proportions and assign images to training and validation sets
-    train_val_split = {}
-    for class_range, num_images in metadata.items():
-        proportion = num_images / total_images
-        class_train_images = int(proportion * N_train)
-        class_val_images = int(proportion * N_val)
-        train_val_split[class_range] = {
-            "train_images": class_train_images,
-            "val_images": class_val_images
-        }
-
-    # Initialize lists to hold the final training and validation image file paths
-    mask_train_set = []
-    mask_val_set = []
-
-    # Helper function to generate full file paths
-    def get_full_file_paths(dataset_list, data_dir):
-        return [os.path.join(data_dir, file_name) for file_name in dataset_list]
-
-    # Process Class 1
-    class_range = "0.8-8"
-    num_images = len(datasetListClass1)
-    class_train_images = train_val_split[class_range]["train_images"]
-    class_val_images = train_val_split[class_range]["val_images"]
-
-    class_train_images = min(class_train_images, num_images)
-    class_val_images = min(class_val_images, num_images - class_train_images)
-
-    class_train_set = get_full_file_paths(datasetListClass1[:class_train_images], DATA_DIR_class1)
-    class_val_set = get_full_file_paths(datasetListClass1[class_train_images:class_train_images + class_val_images], DATA_DIR_class1)
-
-    mask_train_set.extend(class_train_set)
-    mask_val_set.extend(class_val_set)
-
-    # Process Class 2
-    class_range = "8-16"
-    num_images = len(datasetListClass2)
-    class_train_images = train_val_split[class_range]["train_images"]
-    class_val_images = train_val_split[class_range]["val_images"]
-
-    class_train_images = min(class_train_images, num_images)
-    class_val_images = min(class_val_images, num_images - class_train_images)
-
-    class_train_set = get_full_file_paths(datasetListClass2[:class_train_images], DATA_DIR_class2)
-    class_val_set = get_full_file_paths(datasetListClass2[class_train_images:class_train_images + class_val_images], DATA_DIR_class2)
-
-    mask_train_set.append(class_train_set)
-    mask_val_set.append(class_val_set)
-
-    # Process Class 3
-    class_range = "16-24"
-    num_images = len(datasetListClass3)
-    class_train_images = train_val_split[class_range]["train_images"]
-    class_val_images = train_val_split[class_range]["val_images"]
-
-    class_train_images = min(class_train_images, num_images)
-    class_val_images = min(class_val_images, num_images - class_train_images)
-
-    class_train_set = get_full_file_paths(datasetListClass3[:class_train_images], DATA_DIR_class3)
-    class_val_set = get_full_file_paths(datasetListClass3[class_train_images:class_train_images + class_val_images], DATA_DIR_class3)
-
-    mask_train_set.append(class_train_set)
-    mask_val_set.append(class_val_set)
-
-    # Process Class 4
-    class_range = "24-33"
-    num_images = len(datasetListClass4)
-    class_train_images = train_val_split[class_range]["train_images"]
-    class_val_images = train_val_split[class_range]["val_images"]
-
-    class_train_images = min(class_train_images, num_images)
-    class_val_images = min(class_val_images, num_images - class_train_images)
-
-    class_train_set = get_full_file_paths(datasetListClass4[:class_train_images], DATA_DIR_class4)
-    class_val_set = get_full_file_paths(datasetListClass4[class_train_images:class_train_images + class_val_images], DATA_DIR_class4)
-
-    mask_train_set.append(class_train_set)
-    mask_val_set.append(class_val_set)
-    print(len(mask_train_set))
+    print('Before removing : ',len(mask_train_set))
     print(len(mask_val_set))
 
     def signal_if_no_string(lst):
@@ -290,4 +212,9 @@ def create_dataset(data_path, mask_path):
     return traindata, valdata
 
 
+
+
+
+# traindata, valdata = create_dataset(r'C:\Aakrit\College\8th Sem\Major Project\AOTGAN-github\AOT-GAN-for-Inpainting\imageDataset\celebaDatasetAOTGAN\img_align_celeba\img_align_celeba',
+#                                      r'C:\Aakrit\College\8th Sem\Major Project\aotgan(scratch)\aotgan-mask')
 
