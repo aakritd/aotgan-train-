@@ -242,6 +242,6 @@ def create_dataset(data_path, mask_path):
 
 
 
-traindata, valdata = create_dataset(r'C:\Aakrit\College\8th Sem\Major Project\AOTGAN-github\AOT-GAN-for-Inpainting\imageDataset\celebaDatasetAOTGAN\img_align_celeba\img_align_celeba',
-                                     r'C:\Aakrit\College\8th Sem\Major Project\aotgan(scratch)\aotgan-mask')
+# traindata, valdata = create_dataset(r'C:\Aakrit\College\8th Sem\Major Project\AOTGAN-github\AOT-GAN-for-Inpainting\imageDataset\celebaDatasetAOTGAN\img_align_celeba\img_align_celeba',
+#                                      r'C:\Aakrit\College\8th Sem\Major Project\aotgan(scratch)\aotgan-mask')
 
