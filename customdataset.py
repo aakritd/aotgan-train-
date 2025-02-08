@@ -130,24 +130,51 @@ def create_dataset(data_path, mask_path):
 
     # List and sort the files for each class
     datasetListClass1 = sorted(os.listdir(DATA_DIR_class1))
-    mask_train_set_1 = datasetListClass1[125:]  # All images except first 125 for training
-    mask_val_set_1 = datasetListClass1[:125]  # First 125 for validation
+
+    comp_datasetListClass1 = []
+    comp_datasetListClass2 = []
+    comp_datasetListClass3 = []
+    comp_datasetListClass4 = []
+
+    for file in datasetListClass1:
+        comp_datasetListClass1.append(os.path.join(DATA_DIR_class1, file))
+        
+    mask_train_set_1 = comp_datasetListClass1[125:]  # All images except first 125 for training
+    mask_val_set_1 = comp_datasetListClass1[:125]  # First 125 for validation
 
     datasetListClass2 = sorted(os.listdir(DATA_DIR_class2))
-    mask_train_set_2 = datasetListClass2[125:]  # All images except first 125 for training
-    mask_val_set_2 = datasetListClass2[:125]  # First 125 for validation
+
+    for file in datasetListClass2:
+        comp_datasetListClass2.append(os.path.join(DATA_DIR_class2, file))
+
+    mask_train_set_2 = comp_datasetListClass2[125:]  # All images except first 125 for training
+    mask_val_set_2 = comp_datasetListClass2[:125]  # First 125 for validation
 
     datasetListClass3 = sorted(os.listdir(DATA_DIR_class3))
-    mask_train_set_3 = datasetListClass3[125:]  # All images except first 125 for training
-    mask_val_set_3 = datasetListClass3[:125]  # First 125 for validation
+
+    for file in datasetListClass3:
+        comp_datasetListClass3.append(os.path.join(DATA_DIR_class3, file))
+
+
+    mask_train_set_3 = comp_datasetListClass3[125:]  # All images except first 125 for training
+    mask_val_set_3 = comp_datasetListClass3[:125]  # First 125 for validation
 
     datasetListClass4 = sorted(os.listdir(DATA_DIR_class4))
-    mask_train_set_4 = datasetListClass4[125:]  # All images except first 125 for training
-    mask_val_set_4 = datasetListClass4[:125]  # First 125 for validation
+
+    for file in datasetListClass4:
+        comp_datasetListClass4.append(os.path.join(DATA_DIR_class4, file))
+
+
+    mask_train_set_4 = comp_datasetListClass4[125:]  # All images except first 125 for training
+    mask_val_set_4 = comp_datasetListClass4[:125]  # First 125 for validation
+
+    
 
     # Combine all sets
     mask_train_set = mask_train_set_1 + mask_train_set_2 + mask_train_set_3 + mask_train_set_4
     mask_val_set = mask_val_set_1 + mask_val_set_2 + mask_val_set_3 + mask_val_set_4
+
+    print((mask_train_set[0]))
 
 
     print('Before removing : ',len(mask_train_set))
@@ -215,6 +242,6 @@ def create_dataset(data_path, mask_path):
 
 
 
-# traindata, valdata = create_dataset(r'C:\Aakrit\College\8th Sem\Major Project\AOTGAN-github\AOT-GAN-for-Inpainting\imageDataset\celebaDatasetAOTGAN\img_align_celeba\img_align_celeba',
-#                                      r'C:\Aakrit\College\8th Sem\Major Project\aotgan(scratch)\aotgan-mask')
+traindata, valdata = create_dataset(r'C:\Aakrit\College\8th Sem\Major Project\AOTGAN-github\AOT-GAN-for-Inpainting\imageDataset\celebaDatasetAOTGAN\img_align_celeba\img_align_celeba',
+                                     r'C:\Aakrit\College\8th Sem\Major Project\aotgan(scratch)\aotgan-mask')
 
