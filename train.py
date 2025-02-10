@@ -19,20 +19,20 @@ def sample_data(loader):
 
 
 class Trainer():
-    def __init__(self,  data_path, mask_path, tensorboard_path, model_save_path, block_number):
+    def __init__(self,  data_path, mask_path, tensorboard_path, model_save_path, block_number, total_iterations, batch_size, lrG, lrD):
         super(Trainer, self).__init__()
         net = importlib.import_module("models." + "aotgan")
         self.netG = net.Generator(block_number = block_number)
         self.netD = net.Discriminator()
         self.device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
         traindata, valdata = create_dataset(data_path, mask_path)
-        self.traindl = DataLoader(traindata, batch_size=4, shuffle=True, pin_memory=True)
+        self.traindl = DataLoader(traindata, batch_size=batch_size, shuffle=True, pin_memory=True)
         self.traindl = sample_data(self.traindl)
-        self.val_dl = DataLoader(valdata, batch_size=4, shuffle=True, pin_memory=True)
+        self.val_dl = DataLoader(valdata, batch_size=batch_size, shuffle=True, pin_memory=True)
         self.val_dl = sample_data(self.val_dl)
-        self.lr = 0.0001
-        self.optG = optim.Adam(self.netG.parameters(), lr=self.lr, betas=(0, 0.9))
-        self.optD = optim.Adam(self.netD.parameters(), lr=self.lr, betas=(0, 0.9))
+        
+        self.optG = optim.Adam(self.netG.parameters(), lr=lrG, betas=(0, 0.9))
+        self.optD = optim.Adam(self.netD.parameters(), lr=lrD, betas=(0, 0.9))
 
 
         self.tensorboard_directory = tensorboard_path
@@ -44,7 +44,7 @@ class Trainer():
         self.save_every = 100
         self.val_every = 100
 
-        self.total_iterations = 10000
+        self.total_iterations = total_iterations
         self.currentiteration = 0
 
         self.netG, self.netD = self.netG.to(self.device), self.netD.to(self.device)
@@ -271,7 +271,11 @@ if __name__ == '__main__':
     parser.add_argument('--tensorboard_path', default = r'C:\Aakrit\College\8th Sem\Major Project\aotgan(scratch)\tensorboard_logs\scratch', type=str, help='Path to TensorBoard logs')
     parser.add_argument('--model_save_path', default = r'C:\Aakrit\College\8th Sem\Major Project\aotgan(scratch)\model_directory\scratch', type=str, help='Path to save model checkpoints')
     parser.add_argument('--block_number', default = 2, type=int, help='Number of AOT Blocks')
+    parser.add_argument('--total_iterations', default = 20000, type=int, help='Number of AOT Blocks')
+    parser.add_argument('--batch_size', default = 8, type=int, help='Batch Size')
+    parser.add_argument('--lrG', default = 0.0001, type=float, help='Generator Learning Rate')
+    parser.add_argument('--lgD', default = 0.0001, type=float, help='Discriminator Learning Rate')
     args = parser.parse_args()
 
-    trainer = Trainer(args.data_path, args.mask_path, args.tensorboard_path, args.model_save_path, args.block_number)
+    trainer = Trainer(args.data_path, args.mask_path, args.tensorboard_path, args.model_save_path, args.block_number, args.total_iterations, args.batch_size, args.lrG, args.lrD)
     trainer.train()
