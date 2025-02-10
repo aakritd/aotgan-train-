@@ -44,9 +44,12 @@ class CustomDataset(Dataset):
         return (img, mask)
 
 
-def create_dataset(data_path, mask_path):
+def create_dataset(data_path, mask_path, training_data, val_data):
     import os
     import matplotlib.pyplot as plt
+
+    training_data_mask = int(training_data/4)
+    val_data_mask = int(val_data/4)
 
 
 
@@ -73,8 +76,8 @@ def create_dataset(data_path, mask_path):
 
 
     # Split the dataset
-    image_train_set = datasetList[:69904]
-    image_val_set = datasetList[69904:69904+500]
+    image_train_set = datasetList[:training_data]
+    image_val_set = datasetList[training_data:training_data+val_data]
 
 
     # Append the directory path to each filename
@@ -128,27 +131,27 @@ def create_dataset(data_path, mask_path):
     DATA_DIR_class3 = os.path.join(DATA_DIR_mask, '16-24')
     DATA_DIR_class4 = os.path.join(DATA_DIR_mask, '24-32')
 
-    # List and sort the files for each class
-    datasetListClass1 = sorted(os.listdir(DATA_DIR_class1))
-
     comp_datasetListClass1 = []
     comp_datasetListClass2 = []
     comp_datasetListClass3 = []
     comp_datasetListClass4 = []
 
+    # List and sort the files for each class
+    datasetListClass1 = sorted(os.listdir(DATA_DIR_class1))
+
     for file in datasetListClass1:
         comp_datasetListClass1.append(os.path.join(DATA_DIR_class1, file))
         
-    mask_train_set_1 = comp_datasetListClass1[125:]  # All images except first 125 for training
-    mask_val_set_1 = comp_datasetListClass1[:125]  # First 125 for validation
+    mask_train_set_1 = comp_datasetListClass1[val_data_mask:training_data_mask + val_data_mask]  # All images except first 125 for training
+    mask_val_set_1 = comp_datasetListClass1[:val_data_mask]  # First 125 for validation
 
     datasetListClass2 = sorted(os.listdir(DATA_DIR_class2))
 
     for file in datasetListClass2:
         comp_datasetListClass2.append(os.path.join(DATA_DIR_class2, file))
 
-    mask_train_set_2 = comp_datasetListClass2[125:]  # All images except first 125 for training
-    mask_val_set_2 = comp_datasetListClass2[:125]  # First 125 for validation
+    mask_train_set_2 = comp_datasetListClass2[val_data_mask:training_data_mask + val_data_mask]  # All images except first 125 for training
+    mask_val_set_2 = comp_datasetListClass2[:val_data_mask]  # First 125 for validation
 
     datasetListClass3 = sorted(os.listdir(DATA_DIR_class3))
 
@@ -156,8 +159,8 @@ def create_dataset(data_path, mask_path):
         comp_datasetListClass3.append(os.path.join(DATA_DIR_class3, file))
 
 
-    mask_train_set_3 = comp_datasetListClass3[125:]  # All images except first 125 for training
-    mask_val_set_3 = comp_datasetListClass3[:125]  # First 125 for validation
+    mask_train_set_3 = comp_datasetListClass3[val_data_mask:training_data_mask + val_data_mask]  # All images except first 125 for training
+    mask_val_set_3 = comp_datasetListClass3[:val_data_mask]  # First 125 for validation
 
     datasetListClass4 = sorted(os.listdir(DATA_DIR_class4))
 
@@ -165,11 +168,11 @@ def create_dataset(data_path, mask_path):
         comp_datasetListClass4.append(os.path.join(DATA_DIR_class4, file))
 
 
-    mask_train_set_4 = comp_datasetListClass4[125:]  # All images except first 125 for training
-    mask_val_set_4 = comp_datasetListClass4[:125]  # First 125 for validation
+    mask_train_set_4 = comp_datasetListClass4[val_data_mask:training_data_mask + val_data_mask]  # All images except first 125 for training
+    mask_val_set_4 = comp_datasetListClass4[:val_data_mask]  # First 125 for validation
 
     
-
+    print(len(mask_train_set_1), len(mask_train_set_2), len(mask_train_set_3), len(mask_train_set_4))
     # Combine all sets
     mask_train_set = mask_train_set_1 + mask_train_set_2 + mask_train_set_3 + mask_train_set_4
     mask_val_set = mask_val_set_1 + mask_val_set_2 + mask_val_set_3 + mask_val_set_4
@@ -243,5 +246,5 @@ def create_dataset(data_path, mask_path):
 
 
 # traindata, valdata = create_dataset(r'C:\Aakrit\College\8th Sem\Major Project\AOTGAN-github\AOT-GAN-for-Inpainting\imageDataset\celebaDatasetAOTGAN\img_align_celeba\img_align_celeba',
-#                                      r'C:\Aakrit\College\8th Sem\Major Project\aotgan(scratch)\aotgan-mask')
+#                                      r'C:\Aakrit\College\8th Sem\Major Project\aotgan(scratch)\aotgan-mask', 100, 100)
 
