@@ -274,7 +274,7 @@ if __name__ == '__main__':
     parser.add_argument('--total_iterations', default = 20000, type=int, help='Number of AOT Blocks')
     parser.add_argument('--batch_size', default = 8, type=int, help='Batch Size')
     parser.add_argument('--lrG', default = 0.0001, type=float, help='Generator Learning Rate')
-    parser.add_argument('--lgD', default = 0.0001, type=float, help='Discriminator Learning Rate')
+    parser.add_argument('--lrD', default = 0.0001, type=float, help='Discriminator Learning Rate')
     args = parser.parse_args()
 
     trainer = Trainer(args.data_path, args.mask_path, args.tensorboard_path, args.model_save_path, args.block_number, args.total_iterations, args.batch_size, args.lrG, args.lrD)
