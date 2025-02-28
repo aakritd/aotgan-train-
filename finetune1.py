@@ -11,7 +11,7 @@ import torchvision.utils as vutils
 from torchvision.utils import make_grid
 import argparse
 from customdataset import create_dataset
-
+from metric import compare_mae, compare_psnr, compare_ssim
 def sample_data(loader):
     while True:
         for batch in loader:
@@ -144,6 +144,10 @@ class Trainer():
         num_batches = 0
         avg_loss_dict = {}
 
+        total_mae = 0
+        total_psnr = 0
+        total_ssim = 0
+
         with torch.no_grad():  # Disable gradient computation for validation
             for _ in range(10):  # Validate on 10 batches (you can modify this number)
                 image, mask = next(self.val_dl)
@@ -167,8 +171,16 @@ class Trainer():
                     if key not in avg_loss_dict:
                         avg_loss_dict[key] = 0
                     avg_loss_dict[key] += val.item()
+                
+                # Compute MAE, PSNR, SSIM (assuming functions exist)
+                total_mae += compare_mae((image, pred_img))
+                total_psnr += compare_psnr((image, pred_img))
+                total_ssim += compare_ssim((image, pred_img))
 
             avg_val_loss = total_val_loss / num_batches
+            avg_mae = total_mae / num_batches
+            avg_psnr = total_psnr / num_batches
+            avg_ssim = total_ssim / num_batches
 
             for key in avg_loss_dict:
                 avg_loss_dict[key] /= num_batches
@@ -176,6 +188,14 @@ class Trainer():
 
             # Log validation loss
             self.writer.add_scalar("Validation Loss", avg_val_loss, self.currentiteration)
+
+
+            # Log MAE, PSNR, SSIM
+            self.writer.add_scalar("Validation MAE", avg_mae, self.currentiteration)
+            self.writer.add_scalar("Validation PSNR", avg_psnr, self.currentiteration)
+            self.writer.add_scalar("Validation SSIM", avg_ssim, self.currentiteration)
+
+
 
             # Log images to TensorBoard
             self.writer.add_image("Validation Mask", make_grid(mask), self.currentiteration)
@@ -284,10 +304,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_path', default = r'C:\Aakrit\College\8th Sem\Major Project\AOTGAN-github\AOT-GAN-for-Inpainting\imageDataset\celebaDatasetAOTGAN\img_align_celeba\img_align_celeba',type=str, help='Path to training images')
     parser.add_argument('--mask_path', default =  r'C:\Aakrit\College\8th Sem\Major Project\aotgan(scratch)\aotgan-mask', type=str, help='Path to masks')
-    parser.add_argument('--tensorboard_path', default = r'C:\Aakrit\College\8th Sem\Major Project\aotgan(scratch)\tensorboard_logs\celeba(0.000001)', type=str, help='Path to TensorBoard logs')
-    parser.add_argument('--model_save_path', default = r'C:\Aakrit\College\8th Sem\Major Project\aotgan(scratch)\model_directory\finetuned\celeba(0.000001)', type=str, help='Path to save model checkpoints')
+    parser.add_argument('--tensorboard_path', default = r'C:\Aakrit\College\8th Sem\Major Project\aotgan(scratch)\tensorboard_logs\place2(0.0000001)', type=str, help='Path to TensorBoard logs')
+    parser.add_argument('--model_save_path', default = r'C:\Aakrit\College\8th Sem\Major Project\aotgan(scratch)\model_directory\finetuned\place2(0.0000001)', type=str, help='Path to save model checkpoints')
     parser.add_argument('--block_number', default = 2, type=int, help='Number of AOT Blocks')
-    parser.add_argument('--total_iterations', default = 10000, type=int, help='Number of AOT Blocks')
+    parser.add_argument('--total_iterations', default = 1200, type=int, help='Number of AOT Blocks')
     parser.add_argument('--batch_size', default = 4, type=int, help='Batch Size')
     parser.add_argument('--lrG', default = 0.000001, type=float, help='Generator Learning Rate')
     parser.add_argument('--lrD', default = 0.0001, type=float, help='Discriminator Learning Rate')
