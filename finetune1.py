@@ -157,6 +157,10 @@ class Trainer():
                 pred_img = self.netG(masked_image, mask)
                 comp_img = (1 - mask) * image + mask * pred_img
 
+                image_np = image.cpu().numpy()
+                comp_image_np = comp_img.detach().cpu().numpy()
+
+
                 all_loss_dict = lossfn.compute_loss(image, pred_img, comp_img, mask, self.netD)
                 val_loss = (
                     all_loss_dict['l1'] +
@@ -173,9 +177,9 @@ class Trainer():
                     avg_loss_dict[key] += val.item()
                 
                 # Compute MAE, PSNR, SSIM (assuming functions exist)
-                total_mae += compare_mae((image, pred_img))
-                total_psnr += compare_psnr((image, pred_img))
-                total_ssim += compare_ssim((image, pred_img))
+                total_mae += compare_mae((image_np, comp_image_np))
+                total_psnr += compare_psnr((image_np, comp_image_np))
+                total_ssim += compare_ssim((image_np, comp_image_np))
 
             avg_val_loss = total_val_loss / num_batches
             avg_mae = total_mae / num_batches
