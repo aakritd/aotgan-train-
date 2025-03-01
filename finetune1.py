@@ -19,7 +19,7 @@ def sample_data(loader):
 
 
 class Trainer():
-    def __init__(self,  data_path, mask_path, tensorboard_path, model_save_path, block_number, total_iterations, batch_size, lrG, lrD, training_data, val_data):
+    def __init__(self,  data_path, mask_path, tensorboard_path, model_save_path, block_number, total_iterations, batch_size, lrG, lrD, training_data, val_data, decoder_finetune_layers):
         super(Trainer, self).__init__()
         net = importlib.import_module("models." + "pretrained_aot1")
         self.netG = net.InpaintGenerator()
@@ -57,6 +57,31 @@ class Trainer():
             param.requires_grad = False
         for param in self.netG.middle.parameters():
             param.requires_grad = False
+        # print('Length of decoder : ',len(self.netG.decoder)) 
+        # print('First Layer of decoder : ',self.netG.decoder[0]): Convolutional 
+        # print('Second Layer of decoder : ',self.netG.decoder[1]): ReLU
+        # print('Third Layer of decoder : ',self.netG.decoder[2]): Convolutional 
+        # print('Fourth Layer of decoder : ',self.netG.decoder[3]): ReLU
+        # print('Fifth Layer of decoder : ',self.netG.decoder[4]): Convolutional
+        if decoder_finetune_layers == 3: 
+            print("Fine-tune last 3 layers, freeze others...")
+            pass  # Do nothing, all decoder layers remain trainable
+
+        elif decoder_finetune_layers == 2:  
+            print("Freeze the first layer, fine-tune the rest...")
+            for param in self.netG.decoder[0].parameters():
+                param.requires_grad = False
+
+        elif decoder_finetune_layers == 1:  
+            print("Freeze first two layers, fine-tune only the last one...")
+            for param in self.netG.decoder[0].parameters():
+                param.requires_grad = False
+            for param in self.netG.decoder[2].parameters():
+                param.requires_grad = False
+
+        
+
+
         for param in self.netD.conv[0].parameters():
             param.requires_grad = False
         for param in self.netD.conv[1].parameters():
@@ -317,7 +342,8 @@ if __name__ == '__main__':
     parser.add_argument('--lrD', default = 0.0001, type=float, help='Discriminator Learning Rate')
     parser.add_argument('--training_data', default = 1000, type=int, help='Training Size')
     parser.add_argument('--val_data', default = 50, type=int, help='Testing Size')
+    parser.add_argument('--decoder_finetune_layers', default = 1, type=int, help='Decoder Layers Freeze')
     args = parser.parse_args()
 
-    trainer = Trainer(args.data_path, args.mask_path, args.tensorboard_path, args.model_save_path, args.block_number, args.total_iterations, args.batch_size, args.lrG, args.lrD, args.training_data, args.val_data)
+    trainer = Trainer(args.data_path, args.mask_path, args.tensorboard_path, args.model_save_path, args.block_number, args.total_iterations, args.batch_size, args.lrG, args.lrD, args.training_data, args.val_data, args.decoder_finetune_layers)
     trainer.train()
