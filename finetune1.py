@@ -12,6 +12,8 @@ from torchvision.utils import make_grid
 import argparse
 from customdataset import create_dataset
 from metric import compare_mae, compare_psnr, compare_ssim
+from torch.optim.lr_scheduler import StepLR
+
 def sample_data(loader):
     while True:
         for batch in loader:
@@ -27,13 +29,18 @@ class Trainer():
         self.device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
         traindata, valdata = create_dataset(data_path, mask_path, training_data, val_data)
         self.traindl = DataLoader(traindata, batch_size=batch_size, shuffle=True)
+        self.number_of_train_batch = len(self.traindl)
         self.traindl = sample_data(self.traindl)
         self.val_dl = DataLoader(valdata, batch_size=batch_size, shuffle=True)
         self.number_of_val_batch = len(self.val_dl)
         self.val_dl = sample_data(self.val_dl)
         
-        self.optG = optim.Adam(self.netG.parameters(), lr=lrG, betas=(0, 0.9))
-        self.optD = optim.Adam(self.netD.parameters(), lr=lrD, betas=(0, 0.9))
+        self.optG = optim.Adam(self.netG.parameters(), lr=lrG, betas=(0, 0.9), weight_decay=1e-4)
+        self.optD = optim.Adam(self.netD.parameters(), lr=lrD, betas=(0, 0.9), weight_decay=1e-4)
+
+        # For example, reduce learning rate by a factor of 0.1 every 500 iterations
+        self.schedulerG = StepLR(self.optG, step_size=500, gamma=0.1)
+        self.schedulerD = StepLR(self.optD, step_size=500, gamma=0.1)
 
 
         self.tensorboard_directory = tensorboard_path
@@ -321,6 +328,11 @@ class Trainer():
             # Save models every `save_every` iterations
             if self.currentiteration % self.save_every == 0:
                 self.save()
+
+            # Update the learning rate at the end of each iteration/epoch
+            if self.currentiteration % 500 == 0:
+                self.schedulerG.step()  
+                self.schedulerD.step()
 
             
 
