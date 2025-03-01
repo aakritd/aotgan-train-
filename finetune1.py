@@ -330,7 +330,7 @@ class Trainer():
                 self.save()
 
             # Update the learning rate at the end of each iteration/epoch
-            if self.currentiteration % 500 == 0:
+            if self.currentiteration % self.number_of_train_batch == 0:
                 self.schedulerG.step()  
                 self.schedulerD.step()
 
