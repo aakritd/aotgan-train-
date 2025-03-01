@@ -65,7 +65,7 @@ class Trainer():
         # print('Fifth Layer of decoder : ',self.netG.decoder[4]): Convolutional
         if decoder_finetune_layers == 3: 
             print("Fine-tune last 3 layers, freeze others...")
-            pass  # Do nothing, all decoder layers remain trainable
+            # Do nothing, all decoder layers remain trainable
 
         elif decoder_finetune_layers == 2:  
             print("Freeze the first layer, fine-tune the rest...")
@@ -174,7 +174,7 @@ class Trainer():
         total_ssim = 0
 
         with torch.no_grad():  # Disable gradient computation for validation
-            for _ in range(10):  # Validate on 10 batches (you can modify this number)
+            for _ in range(len(self.val_dl)):  # Validate on 10 batches (you can modify this number)
                 image, mask = next(self.val_dl)
                 image, mask = image.to(self.device), mask.to(self.device)
                 masked_image = (image * (1 - mask).float()) + mask
