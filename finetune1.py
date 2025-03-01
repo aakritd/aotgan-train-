@@ -29,6 +29,7 @@ class Trainer():
         self.traindl = DataLoader(traindata, batch_size=batch_size, shuffle=True)
         self.traindl = sample_data(self.traindl)
         self.val_dl = DataLoader(valdata, batch_size=batch_size, shuffle=True)
+        self.number_of_val_batch = len(self.val_dl)
         self.val_dl = sample_data(self.val_dl)
         
         self.optG = optim.Adam(self.netG.parameters(), lr=lrG, betas=(0, 0.9))
@@ -174,7 +175,7 @@ class Trainer():
         total_ssim = 0
 
         with torch.no_grad():  # Disable gradient computation for validation
-            for _ in range(len(self.val_dl)):  # Validate on 10 batches (you can modify this number)
+            for _ in range(0, self.number_of_val_batch):  # Validate on 10 batches (you can modify this number)
                 image, mask = next(self.val_dl)
                 image, mask = image.to(self.device), mask.to(self.device)
                 masked_image = (image * (1 - mask).float()) + mask
